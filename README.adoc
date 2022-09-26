@@ -1,0 +1,11 @@
+= Algorithms and Data Structures in TypeScript
+:url-gitlab-repo: https://gitlab.com/devhowto/command-line-shell-script
+:url-github-repo: https://github.com/devhowto/command-line-shell-script
+
+A place where I take notes, tips, scripts, etc. about command line and shell scripting.
+
+[NOTE]
+====
+The main repository where all the action takes place is the one on {url-gitlab-repo}[Gitlab^].
+The {url-github-repo}[Github one^] is a only mirror.
+====
