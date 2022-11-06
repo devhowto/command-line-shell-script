@@ -9,4 +9,8 @@
 * xref:cp.adoc[]
 * xref:tar.adoc[]
 * xref:find.adoc[]
+
+* xref:sed/intro.adoc[]
+** xref:sed/line-number-command.adoc[]
+
 * xref:terminal/kitty.adoc[]

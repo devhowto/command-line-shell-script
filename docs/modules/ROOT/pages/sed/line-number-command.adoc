@@ -1,0 +1,81 @@
+= The Line Number Command ‘=’ :: SED
+
+== The Spec on ‘=’
+
+.sed spec excerpt on = command
+----
+[1addr]=
+    Write the following to standard output:
+
+    "%d\n", <current line number>
+----
+
+Open the https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sed.html[spec] and search for “[1addr]=”.
+
+Yep, it prints the current line number **followed by a newline**.
+
+It means the line number and the line content will not be on the same line:
+
+----
+$ sed = < ./poem1.txt
+1
+Roses are #ff0000
+2
+Violets are #0000ff
+3
+If you can read this
+4
+You are a n3rd too!
+----
+
+== Some Ideas on Using ‘=’
+
+With `-n`, we suppress outputting the pattern space so that only the line numbers (each on its own line, according to the spec) are printed:
+
+[source,shell-session]
+----
+$ sed -n = < ./poem1.txt
+1
+2
+3
+4
+----
+
+No easy way to print the line numbers on the same output lines with one single sed, but two sed invocations will do:
+
+[source,shell-session]
+----
+$ sed = < ./poem1.txt  | sed 'N; s/\n/ /'
+1 Roses are #ff0000
+2 Violets are #0000ff
+3 If you can read this
+4 You are a n3rd too!
+----
+
+Maybe add something between the line number and the actual line contents:
+
+[source,shell-session]
+----
+$ sed = < ./poem1.txt  | sed 'N; s/\n/ → /'
+1 → Roses are #ff0000
+2 → Violets are #0000ff
+3 → If you can read this
+4 → You are a n3rd too!
+
+$ sed = < ./poem1.txt  | sed 'N; s/\n/. /'
+1. Roses are #ff0000
+2. Violets are #0000ff
+3. If you can read this
+4. You are a n3rd too!
+----
+
+Since `=` command *can* take an address, we can use it to print the number of the last line to mimic to `wc -l`:
+
+[source,shell-session]
+----
+$ sed -n '$=' < ./poem1.txt
+4
+
+$ wc -l < ./poem1.txt 
+4
+----

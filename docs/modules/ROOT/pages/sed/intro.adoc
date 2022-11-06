@@ -1,0 +1,11 @@
+= Sream EDitor | SED
+
+== Docs and Resources
+
+SED has a https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sed.html[spec] by the Open Group.
+GNU Sed is probably the best sed implementation to date (2022).
+Read its https://www.gnu.org/software/sed/manual/[manual online^].
+
+Also see https://www.grymoire.com/Unix/Sed.html[this amazing SED tutorial^] by Bruce Barnett.
+
+
