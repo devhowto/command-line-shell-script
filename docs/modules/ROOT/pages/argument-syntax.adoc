@@ -6,12 +6,11 @@ in general.
 
 == Whitespace and Quoting
 
-In the shell, whitespace matters. It is used to break the input into
-tokens. See
-https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_03[the
-spec] and
-https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Shell-Syntax[bash
-shell syntax documentation].
+In the shell, whitespace matters. It is used to break the input into tokens.
+See
+https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_03[the spec]
+and
+https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Shell-Syntax[bash shell syntax documentation].
 
 For the shell, the first _word_ (a.k.a _token_) is the command, or the
 name of the program to run, and the remaining _words_ are parameters to
@@ -93,13 +92,12 @@ Now we removed `secret message.txt` and not incidents took place.
 
 The _end of options_ `--` is used to indicate the end of options 🤣. It
 is documented under
-https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html#tag_12_02[Utility
-Syntax Guidelines].
+https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html#tag_12_02[Utility Syntax Guidelines].
 
 Guideline 10 says:
 
 ____
-"The first -- argument that is not an option-argument should be accepted
+"The first `--` argument that is not an option-argument should be accepted
 as a delimiter indicating the end of options. Any following arguments
 should be treated as operands, even if they begin with the '-'
 character."
