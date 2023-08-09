@@ -1,0 +1,8 @@
+= Grep
+
+Find all package.json files that DO NOT contain the string “migratedToCore”:
+
+[source,shell-session]
+----
+$ help :
+----
