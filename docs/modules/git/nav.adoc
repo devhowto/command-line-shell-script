@@ -1,2 +1,2 @@
 * Git
-** xref:inspecting-commits.adoc[]
+** xref:inspecting-and-diffing.adoc[]

@@ -1,0 +1,74 @@
+= Inspecting And Diffing
+:page-subtitle: Git
+
+== Added, Changed and Deleted Files !
+
+Show deleted files on current branch vs what is in `origin/develop`:
+
+[source,source]
+----
+git diff --name-status  origin/develop..HEAD | grep '^D' | wc -l
+----
+
+== Diff non-committed changes
+
+Changes were made to `./intro.adoc`.
+The following command displays what has changed on that file, no mater if it is staged or not:
+
+[source,text]
+----
+$ git diff ./file.txt
+----
+
+For example, in the branch `devel`, `main.c` looks like this:
+
+[source,c]
+----
+#include <stdio.h>
+
+int main(void) {
+  fprintf(stderr, "Not implemented!\n");
+  return 0;
+}
+----
+
+The working tree is clean.
+Then we edit `main.c` and make add this line (plus an empty line after it):
+
+[source,c]
+----
+#define MAX_BYTES 0
+----
+
+Then, to see the diff of this non-committed, non-staged change:
+
+[source,text]
+----
+$ git diff ./main.c
+----
+
+image::git-diff-changed.png[git diff changed]
+
+[source,text]
+----
+$ git diff ./main.c
+diff --git a/main.c b/main.c
+index b3d9d56..83e2891 100644
+--- a/main.c
++++ b/main.c
+@@ -1,5 +1,7 @@
+ #include <stdio.h>
+
++#define MAX_BYTES 8
++
+ int main(void) {
+   fprintf(stderr, "Not implemented!\n");
+   return 0;
+----
+
+If the file has been staged (added to the index), then the `--staged` option is needed as well (otherwise we see no output, as if nothing was changed on the file):
+
+[source,text]
+----
+$ git diff --staged ./main.c
+----
