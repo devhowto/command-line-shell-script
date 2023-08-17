@@ -10,4 +10,4 @@ asciidoc:
 nav:
 - modules/ROOT/nav.adoc
 - modules/git/nav.adoc
-
+- modules/vim-nvim/nav.adoc

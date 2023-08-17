@@ -1,0 +1,2 @@
+* Vim and NeoVim
+** xref:cool-tricks.adoc[]
