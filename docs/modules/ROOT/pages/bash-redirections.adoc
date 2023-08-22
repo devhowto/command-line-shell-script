@@ -1,6 +1,53 @@
 = Bash Redirections
 :page-subtitle:
 
+== Intro
+
+Programs can send output to both STDOUT (file descriptor 1) or STDERR (file descriptor 2).
+A well-designed, well-written program will send output to each as appropriate.
+
+For example, `ls` and many (if not all) standard Unix and/or GNU tools send normal messages to STDOUT and error messages to STDERR.
+`ls` is one such tool.
+
+When programs send messages to STDERR, they show up in the terminal as if they were standard, normal messages, but that is because shells attach both STDOUT and STDERR to the terminal so we can read messages, be them errors or not.
+
+For example, if we run the command `nope`, and such command (program) cannot be found and run, the shell informs you about it:
+
+[source,shell-session]
+----
+$ nope
+-bash: nope: command not found
+----
+
+And we could redirect any error message (FD 2) to a `/dev/null`, a log file, or some other thing.
+
+== Redirect to STDERR
+
+First, let's run a command that doesn't exist and make sure the shell sends the error to `/dev/null`:
+
+[source,shell-session]
+----
+$ nope
+-bash: nope: command not found
+
+$ nope 2> /dev/null
+(no output)
+----
+
+Run `ls` on a non-existing file, which will cause errors:
+
+[source,shell-session]
+----
+$ ls ./i-dont-exist
+ls: cannot access './i-dont-exist': No such file or directory
+----
+
+If we don't want to display the error, but instead send it to the black hole, we then send STDERR (file descriptor 2) to `/dev/null`:
+
+[source,shell-session]
+----
+$ ls ./i-dont-exist 2> /dev/null
+----
 
 == References
 
