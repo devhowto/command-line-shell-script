@@ -1,0 +1,7 @@
+= Bash Redirections
+:page-subtitle:
+
+
+== References
+
+* link:https://www.gnu.org/software/bash/manual/html_node/Redirections.html[GNU Bash Redirections online manual^].

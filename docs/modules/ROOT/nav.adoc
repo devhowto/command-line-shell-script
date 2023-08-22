@@ -6,6 +6,7 @@
 * xref:bash-parameter-expansion.adoc[]
 * xref:bash-brace-expansion.adoc[]
 * xref:bash-arrays.adoc[]
+* xref:bash-redirections.adoc[]
 * xref:cp.adoc[]
 * xref:tar.adoc[]
 * xref:find.adoc[]
