@@ -1,5 +1,5 @@
 = Bash Redirections
-:page-subtitle:
+:page-subtitle: Command Line and Shell Script
 
 == Intro
 
@@ -49,6 +49,58 @@ If we don't want to display the error, but instead send it to the black hole, we
 $ ls ./i-dont-exist 2> /dev/null
 ----
 
+== Redirect all messages to /dev/null
+
+Sometimes we just want the terminal to be silent and not pollute the output with noise that may not matter for a given situation and ends up taking our attention away from whatever we are doing.
+See here one example:
+
+image::emacs-stdout-stderr-1.png[bash emacs stdout sterr]
+
+[NOTE]
+====
+I do not advise hiding terminal messages in general, but sometimes it may be desirable for specific situations.
+====
+
+I just want to open emacs on my `little-schemer` directory to work on the exercise of the book The Little Schemer, but those messages annoy and distract me.
+
+For bash >= 4, we can simply do:
+
+.redir stderr and stdout to /dev/null, bash >= 4 only
+[source,shell-session]
+----
+$ emacs ./main.scm &> /dev/null &
+----
+
+Of course one may prefer to redirect to a text file instead:
+
+.redir stderr and stdout to text file
+[source,shell-session]
+----
+$ emacs ./main.scm &> ./log.txt &
+----
+
+Note we used `&>`.
+`For bash < 4 or other shells, this is a more portable approach is to use the more standard `2>&1`:
+
+.redir stderr and stdout to /dev/null, portable
+[source,shell-session]
+----
+$ emacs ./defs.scm > /dev/null 2>&1 &
+----
+
+Or
+
+.redir stderr and stdout to text file, portable
+[source,shell-session]
+----
+$ emacs ./defs.scm > ./out.txt 2>&1 &
+----
+
+Note we first `> /dev/null` then we redirect STDERR to STDOUT with `2>&1`.
+
+In all cases, the final `&` is used to free the prompt as the process then is run in the background.
+
 == References
 
 * link:https://www.gnu.org/software/bash/manual/html_node/Redirections.html[GNU Bash Redirections online manual^].
+
