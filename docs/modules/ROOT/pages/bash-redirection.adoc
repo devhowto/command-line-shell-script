@@ -1,17 +1,30 @@
-= Bash Redirections
+= Bash Redirection
 :page-subtitle: Command Line and Shell Script
 
 == Intro
 
-Programs can send output to both STDOUT (file descriptor 1) or STDERR (file descriptor 2).
-A well-designed, well-written program will send output to each as appropriate.
+Redirection is all about _file descriptors (FD for short):
 
-For example, `ls` and many (if not all) standard Unix and/or GNU tools send normal messages to STDOUT and error messages to STDERR.
-`ls` is one such tool.
+* Standard input, or STDIN is FD 0.
+* Standard output, or STDOUT is FD 1.
+* Standard error, or STDERR is FD 2.
+
+On most Unix systems, we have:
+
+* `/dev/stdin`
+* `/dev/stdout`
+* `/dev/stderr`
+
+Shells offer shorthand syntax to work with those devices and file descriptors.
+
+Programs can read input from STDIN or other sources, as well as send output to both STDOUT, STDERR or other destinations, like log files.
+A well-designed, well-written program will send output to whatever destination is makes sense allowing a more fine-grained control users trying to filer and read the program's output.
+
+Many (if not all) standard Unix and/or GNU tools send normal messages to STDOUT and error messages to STDERR.
 
 When programs send messages to STDERR, they show up in the terminal as if they were standard, normal messages, but that is because shells attach both STDOUT and STDERR to the terminal so we can read messages, be them errors or not.
 
-For example, if we run the command `nope`, and such command (program) cannot be found and run, the shell informs you about it:
+For example, if we run the command `nope`, and such command (program) cannot be found, the shell informs you about it:
 
 [source,shell-session]
 ----
@@ -19,22 +32,41 @@ $ nope
 -bash: nope: command not found
 ----
 
-And we could redirect any error message (FD 2) to a `/dev/null`, a log file, or some other thing.
+That message is STDERR, but we see it in STDOUT (because by default, the shell attaches both STDOUT and STDERR to the terminal).
 
-== Redirect to STDERR
+And we can redirect any error message (FD2) to the `/dev/null` black hole, a log file, or some other thing.
+Read on.
 
-First, let's run a command that doesn't exist and make sure the shell sends the error to `/dev/null`:
+== Redirect STDERR
+
+First, let's run a command that doesn't exist:
 
 [source,shell-session]
 ----
 $ nope
 -bash: nope: command not found
+----
 
+If that message was sent to STDERR, we can redirect it, for instance, to `/dev/null` to ignore it:
+
+[source,shell-session]
+----
 $ nope 2> /dev/null
 (no output)
 ----
 
-Run `ls` on a non-existing file, which will cause errors:
+Or to a file for later inspection:
+
+[source,shell-session]
+----
+$ nope 2> ./err.txt
+(no output)
+
+$ cat ./err.txt
+bash: nope: command not found
+----
+
+Run `ls` on a non-existing file, which will print an error message:
 
 [source,shell-session]
 ----
@@ -42,11 +74,38 @@ $ ls ./i-dont-exist
 ls: cannot access './i-dont-exist': No such file or directory
 ----
 
+If `ls` sends error messages to STDERR (which it does), then we can redirect that message to whatever destination we see fit.
 If we don't want to display the error, but instead send it to the black hole, we then send STDERR (file descriptor 2) to `/dev/null`:
 
 [source,shell-session]
 ----
 $ ls ./i-dont-exist 2> /dev/null
+----
+
+Or to a log file:
+
+[source,shell-session]
+----
+$ ls ./i-dont-exist 2> ./err.log
+(no output)
+$ cat ./err.log
+ls: cannot access './i-dont-exist': No such file or directory
+----
+
+And the redirection `2> destination` part does not need to came last.
+It just feels more natural to write it last, but it can be even written before the command itself:
+
+[source,shell-session]
+----
+$ 2> ./err.txt nope
+(no output)
+$ cat ./err.txt
+bash: nope: command not found
+
+$ 2> ./err.log ls ./i-dont-exist
+(no output)
+$ cat ./err.log
+ls: cannot access './i-dont-exist': No such file or directory
 ----
 
 == Redirect all messages to /dev/null
