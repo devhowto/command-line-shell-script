@@ -76,6 +76,8 @@ That is why we can simply do things like `echo hello`, for example.
 But let's pretend for a moment that we have to perform all redirections manually.
 As you'll see, this is a great way to understand how things work.
 
+In all examples that follow, be mindful that the order in which redirections are applied is important.
+
 == Send Output to STDOUT
 
 We'll use bash's builtin `printf` to get started.
@@ -122,11 +124,19 @@ hello
 
 It still just prints to the terminal because by default the shell attaches STDIN, STDOUT and STDERR to the terminal.
 
+And this also sends STDOUT to STDERR:
+
+[source,shell-session]
+----
+$ 1>&2 printf %s\\n hello
+hello
+----
+
 Get ``printf``s STDOUT and redirect that to `/dev/stderr` and then redirect that to `/dev/null`:
 
 [source,shell-session]
 ----
-$ 2> /dev/null 1> /dev/stderr printf %s\\n hello 2> /dev/null
+$ 2> /dev/null 1> /dev/stderr printf %s\\n hello
 (no output)
 ----
 
@@ -136,7 +146,7 @@ Get ``printf``s STDOUT, redirect to `/dev/stderr` and then redirect that to `./e
 
 [source,shell-session]
 ----
-$ 2> ./err.log 1> /dev/stderr printf %s\\n hello 2> /dev/null
+$ 2> ./err.log 1> /dev/stderr printf %s\\n hello
 (no output)
 
 $ cat ./err.log
@@ -145,6 +155,17 @@ hello
 
 No output because STDERR was redirected to a text file `./err.log`.
 Then we use `cat` and observe the output was really sent to that file.
+
+And the above is the same as this:
+
+[source,shell-session]
+----
+$ 2> ./err.log 1>&2 printf %s\\n hello
+(no output)
+
+$ cat ./err.log
+hello
+----
 
 == Redirect STDERR
 
