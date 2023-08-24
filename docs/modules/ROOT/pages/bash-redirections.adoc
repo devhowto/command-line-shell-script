@@ -1,5 +1,6 @@
-= Bash Redirection
+= Bash Redirections
 :page-subtitle: Command Line and Shell Script
+:description: Concepts and examples on how to manage shell redirection of input and output
 
 == Intro
 
@@ -36,6 +37,114 @@ That message is STDERR, but we see it in STDOUT (because by default, the shell a
 
 And we can redirect any error message (FD2) to the `/dev/null` black hole, a log file, or some other thing.
 Read on.
+
+== Food for Thought
+
+Consider the C programming language.
+When we do something like this, where is the text sent to?
+
+[source,c]
+----
+#include <stdio.h>
+
+int main(void) {
+  printf("%s\n", "Hello, world!");
+  return 0;
+}
+----
+
+Unsure?
+What if I write it this way?
+
+[source,c]
+----
+#include <stdio.h>
+
+int main(void) {
+  fprintf(stdout, "%s\n", "Hello, world!");
+  return 0;
+}
+----
+
+Similar with the shell.
+We kind of know and assume `echo hello` or `printf %s\\n 'Hi` will send the output to STDOUT, but it is easy to just take it for granted and not pay much attention to it.
+
+== Understanding in Practice
+
+Bash (and all shells, for that matter) performs redirection by default in almost all situations.
+That is why we can simply do things like `echo hello`, for example.
+But let's pretend for a moment that we have to perform all redirections manually.
+As you'll see, this is a great way to understand how things work.
+
+== Send Output to STDOUT
+
+We'll use bash's builtin `printf` to get started.
+It sends output to STDOUT (or to a variable, with the `-v` option) unless it errors out because of an invalid format option or something else, in which case it sends the error message to STDERR.
+We can capture its STDOUT with file descriptor 1 and then redirect that as we see fit.
+
+Get ``printf``s STDOUT and redirect that to `/dev/stdout`:
+
+[source,shell-session]
+----
+$ 1> /dev/stdout printf %s\\n hello
+hello
+----
+
+And the above example is in fact just the same as this:
+
+[source,shell-session]
+----
+$ printf %s\\ hello
+hello
+----
+
+Get ``printf``s STDOUT and redirect that to `./out.txt`:
+
+[source,shell-session]
+----
+$ 1> ./out.txt printf %s\\n hello
+(no output)
+
+$ cat ./out.txt
+hello
+----
+
+No output because the output was redirected to `./out.txt`.
+Then we used cat an observed the output had really been sent to that file.
+
+Get ``printf``s STDOUT and redirect that to `/dev/stderr`:
+
+[source,shell-session]
+----
+$ 1> /dev/stderr printf %s\\n hello
+hello
+----
+
+It still just prints to the terminal because by default the shell attaches STDIN, STDOUT and STDERR to the terminal.
+
+Get ``printf``s STDOUT and redirect that to `/dev/stderr` and then redirect that to `/dev/null`:
+
+[source,shell-session]
+----
+$ 2> /dev/null 1> /dev/stderr printf %s\\n hello 2> /dev/null
+(no output)
+----
+
+No output because STDERR was consumed by the dark side of the force (`/dev/null`).
+
+Get ``printf``s STDOUT, redirect to `/dev/stderr` and then redirect that to `./err.log`:
+
+[source,shell-session]
+----
+$ 2> ./err.log 1> /dev/stderr printf %s\\n hello 2> /dev/null
+(no output)
+
+$ cat ./err.log
+hello
+----
+
+No output because STDERR was redirected to a text file `./err.log`.
+Then we use `cat` and observe the output was really sent to that file.
 
 == Redirect STDERR
 
@@ -158,6 +267,13 @@ $ emacs ./defs.scm > ./out.txt 2>&1 &
 Note we first `> /dev/null` then we redirect STDERR to STDOUT with `2>&1`.
 
 In all cases, the final `&` is used to free the prompt as the process then is run in the background.
+
+== printf
+
+[source,bash]
+----
+printf '%s
+----
 
 == References
 
