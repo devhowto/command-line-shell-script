@@ -4,7 +4,7 @@
 
 == Intro
 
-Redirection is all about _file descriptors (FD for short):
+Redirection is all about _file descriptors_ (FD for short):
 
 * Standard input, or STDIN is FD 0.
 * Standard output, or STDOUT is FD 1.
@@ -16,14 +16,31 @@ On most Unix systems, we have:
 * `/dev/stdout`
 * `/dev/stderr`
 
+And even those are actually links to other special files on most unix-like systems:
+
+[source,shell-session]
+----
+$ file /dev/stdin
+/dev/stdin: symbolic link to /proc/self/fd/0
+
+$ file /proc/self/fd/0
+/proc/self/fd/0: symbolic link to /dev/pts/7
+
+$ file /proc/self/fd/0 /dev/pts/7
+/proc/self/fd/0: symbolic link to /dev/pts/7
+/dev/pts/7:      character special (136/7)
+----
+
+But from the user's perspective, we don't need to go that deep.
+
 Shells offer shorthand syntax to work with those devices and file descriptors.
 
 Programs can read input from STDIN or other sources, as well as send output to both STDOUT, STDERR or other destinations, like log files.
-A well-designed, well-written program will send output to whatever destination is makes sense allowing a more fine-grained control users trying to filer and read the program's output.
+A well-designed, well-written program will send output to whatever destination is makes sense at any given situation, allowing a more fine-grained control to users trying to collect, log, archive, filter, or simply read the program's output.
 
 Many (if not all) standard Unix and/or GNU tools send normal messages to STDOUT and error messages to STDERR.
 
-When programs send messages to STDERR, they show up in the terminal as if they were standard, normal messages, but that is because shells attach both STDOUT and STDERR to the terminal so we can read messages, be them errors or not.
+When programs send messages to STDERR, they show up in the terminal as if they were standard, normal messages, but that is because shells attaches both STDOUT and STDERR to the terminal so we can read messages, be them errors or not.
 
 For example, if we run the command `nope`, and such command (program) cannot be found, the shell informs you about it:
 
@@ -33,15 +50,15 @@ $ nope
 -bash: nope: command not found
 ----
 
-That message is STDERR, but we see it in STDOUT (because by default, the shell attaches both STDOUT and STDERR to the terminal).
+That message is STDERR, but we see it in the terminal because by default, the shell attaches both STDOUT and STDERR to the terminal.
 
-And we can redirect any error message (FD2) to the `/dev/null` black hole, a log file, or some other thing.
+And we can redirect any error message (FD 2, `/dev/stderr/`) to the `/dev/null` black hole, a log file, or some other destination.
 Read on.
 
 == Food for Thought
 
 Consider the C programming language.
-When we do something like this, where is the text sent to?
+When we do something like this, where is the output text sent to‽
 
 [source,c]
 ----
@@ -53,8 +70,8 @@ int main(void) {
 }
 ----
 
-Unsure?
-What if I write it this way?
+Unsure‽
+What if I write it this way‽
 
 [source,c]
 ----
@@ -67,12 +84,13 @@ int main(void) {
 ----
 
 Similar with the shell.
-We kind of know and assume `echo hello` or `printf %s\\n 'Hi` will send the output to STDOUT, but it is easy to just take it for granted and not pay much attention to it.
+We kind of know and assume `echo hello` or `printf %s\\n 'Hi` will somehow “print the output”.
+It is easy to just take it for granted and not pay much attention to it.
 
 == Understanding in Practice
 
 Bash (and all shells, for that matter) performs redirection by default in almost all situations.
-That is why we can simply do things like `echo hello`, for example.
+That is why we can simply do things like `echo hello`, for example and see the text printed on the terminal.
 But let's pretend for a moment that we have to perform all redirections manually.
 As you'll see, this is a great way to understand how things work.
 
@@ -81,7 +99,7 @@ In all examples that follow, be mindful that the order in which redirections are
 == Send Output to STDOUT
 
 We'll use bash's builtin `printf` to get started.
-It sends output to STDOUT (or to a variable, with the `-v` option) unless it errors out because of an invalid format option or something else, in which case it sends the error message to STDERR.
+It sends output to STDOUT (or to a variable, with the `-v` option) unless it errors out due of an invalid format option or something else, in which case it sends the error message to STDERR.
 We can capture its STDOUT with file descriptor 1 and then redirect that as we see fit.
 
 Get ``printf``s STDOUT and redirect that to `/dev/stdout`:
@@ -112,7 +130,7 @@ hello
 ----
 
 No output because the output was redirected to `./out.txt`.
-Then we used cat an observed the output had really been sent to that file.
+Then we used cat and observed the output had really been sent to that file.
 
 Get ``printf``s STDOUT and redirect that to `/dev/stderr`:
 
@@ -124,7 +142,7 @@ hello
 
 It still just prints to the terminal because by default the shell attaches STDIN, STDOUT and STDERR to the terminal.
 
-And this also sends STDOUT to STDERR:
+And this also sends STDOUT to STDERR, but now using the special bash's syntax:
 
 [source,shell-session]
 ----
@@ -154,7 +172,7 @@ hello
 ----
 
 No output because STDERR was redirected to a text file `./err.log`.
-Then we use `cat` and observe the output was really sent to that file.
+Then we used `cat` and observed the output was really sent to that file.
 
 And the above is the same as this:
 
@@ -166,6 +184,9 @@ $ 2> ./err.log 1>&2 printf %s\\n hello
 $ cat ./err.log
 hello
 ----
+
+In the above examples, a mix of bash's syntax and standard Unix-like special devices were used.
+In practice (command line, shell scripting), we'll mostly stick to the shell's special syntax most of the time.
 
 == Redirect STDERR
 
