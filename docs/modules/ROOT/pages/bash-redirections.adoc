@@ -335,6 +335,8 @@ In all cases, the final `&` is used to free the prompt as the process then is ru
 
 == printf
 
+When writing output messages to indicate some sort of error, some people write scripts like this:
+
 [source,bash]
 ----
 printf '%s
