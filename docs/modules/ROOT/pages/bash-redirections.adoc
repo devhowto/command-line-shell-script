@@ -342,5 +342,6 @@ printf '%s
 
 == References
 
+* link:https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_07[OpenGroup POSIX spec on Shell Command Language, Section 2.7 Redirection^]
 * link:https://www.gnu.org/software/bash/manual/html_node/Redirections.html[GNU Bash Redirections online manual^].
 
