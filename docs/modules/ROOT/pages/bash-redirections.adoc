@@ -96,6 +96,14 @@ As you'll see, this is a great way to understand how things work.
 
 In all examples that follow, be mindful that the order in which redirections are applied is important.
 
+== A Note On Default File Descriptors
+
+When `>` is used to redirect output (like in `echo hello > ./out.log`), that lonely `>` is actually short for `1>`.
+When redirecting output, the default, implicit file descriptor is FD 1, or `/dev/stdout`.
+
+When `<` is used to redirect input (like in `sed -n '/main/p' < ./main.c`), that lonely `<` is actually short for `0<`.
+When redirecting input, the default, implicit file descriptor is FD 0, or `/dev/stdin`.
+
 == Send Output to STDOUT
 
 We'll use bash's builtin `printf` to get started.
@@ -259,7 +267,10 @@ $ cat ./err.log
 ls: cannot access './i-dont-exist': No such file or directory
 ----
 
-== Redirect all messages to /dev/null
+And remember that the shell sets up redirections _before_ commands are run.
+So one could argue it even more closely matches to whatever the shell even does internally.
+
+== Redirect All Messages to /dev/null
 
 Sometimes we just want the terminal to be silent and not pollute the output with noise that may not matter for a given situation and ends up taking our attention away from whatever we are doing.
 See here one example:
@@ -271,7 +282,7 @@ image::emacs-stdout-stderr-1.png[bash emacs stdout sterr]
 I do not advise hiding terminal messages in general, but sometimes it may be desirable for specific situations.
 ====
 
-I just want to open emacs on my `little-schemer` directory to work on the exercise of the book The Little Schemer, but those messages annoy and distract me.
+I just want to open emacs on my `little-schemer` directory to work on the exercises from the book The Little Schemer, but those messages annoy and distract me.
 
 For bash >= 4, we can simply do:
 
@@ -283,19 +294,26 @@ $ emacs ./main.scm &> /dev/null &
 
 Of course one may prefer to redirect to a text file instead:
 
-.redir stderr and stdout to text file
+.redir stderr and stdout to text file, bash >= 4
 [source,shell-session]
 ----
 $ emacs ./main.scm &> ./log.txt &
 ----
 
-Note we used `&>`.
-`For bash < 4 or other shells, this is a more portable approach is to use the more standard `2>&1`:
+Note we used the `&>` bash syntax.
+For bash < 4 or other shells, a more portable approach is to use the standard `2>&1` syntax:
 
 .redir stderr and stdout to /dev/null, portable
 [source,shell-session]
 ----
-$ emacs ./defs.scm > /dev/null 2>&1 &
+$ emacs ./defs.scm 1> /dev/null 2>&1 &
+----
+
+And this more closely matches the order in which things happen behind the scenes:
+
+[source,shell-session]
+----
+$ 1> /dev/null 2>&1 emacs ./defs.scm &
 ----
 
 Or
@@ -306,7 +324,12 @@ Or
 $ emacs ./defs.scm > ./out.txt 2>&1 &
 ----
 
-Note we first `> /dev/null` then we redirect STDERR to STDOUT with `2>&1`.
+Again with the syntax which more closely matches the order in which things happen (redirections are setup first):
+
+[source,shell-session]
+----
+$ 1> ./out.log 2>&1 emacs ./defs.scm &
+----
 
 In all cases, the final `&` is used to free the prompt as the process then is run in the background.
 
